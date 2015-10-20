@@ -1,4 +1,4 @@
-Simple demo for Lattice Semiconductor iCEStick using iCEStorm tools.
+A really simple flashing light Demo for the IceStick.
 
 Public Domain
-Al Williams alwilliams@hackaday.com
+James Cordell
