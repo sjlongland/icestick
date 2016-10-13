@@ -1,0 +1,48 @@
+module testbench_for_pwm_reader;
+
+
+  wire [9:0] counter_out;
+  reg pwm_signal,ack_i,clk,rst,clk_en_i;
+  wire stb_o;
+
+  pwm_reader my_pwm_reader(clk,clk_en_i,rst,pwm_signal,ack_i,counter_out,stb_o);
+  
+  initial 
+begin
+  clk=0;rst =0;clk_en_i=0;pwm_signal=0;ack_i=0;
+  #1 rst = 1; clk_en_i = 0;
+  #1 rst = 0; clk_en_i = 1;
+  #6 pwm_signal =1;//pwm signal start
+  #22 pwm_signal=0;//pwm signal end
+  //#12  ack_i=1;
+  #2 rst=1;clk_en_i = 0;
+  #2 rst=0;clk_en_i = 1;
+  
+  #8 pwm_signal =1;//pwm signal start
+  #20 pwm_signal=0;//pwm signal end 
+  //#10 ack_i = 1;
+  #1 clk_en_i=1;//reset strobe
+  
+  
+  #5 $finish;
+end
+
+  always @(posedge clk)//this resets the clock by ack_i
+    begin
+    ack_i = stb_o;
+  end
+  
+  always 
+    begin
+      #1 clk = ~clk; // generate a clk
+    end
+  
+  initial
+    begin
+      integer i;
+      for(i =0; i<=800; i=i+1) begin
+        #1 $display("clk=%d \trst=%d \tclk_en_i=%d \tcounter_out=%f \tpwm=%d ack_i=%d stb_o=%d",clk,rst,clk_en_i,counter_out,pwm_signal,ack_i,stb_o);
+      end
+    end
+
+endmodule
