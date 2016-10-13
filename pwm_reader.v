@@ -82,7 +82,9 @@ module pwm_reader (
                     pwm_signal_i,
                     ack_i,
                     dat_o,
-                    stb_o
+                    stb_o,
+  					s_cnt,
+  					t_cnt
                     );
  
 parameter COUNTER_WIDTH_PP     = 10; // Size to hold (max_pwm_period)*(Fclk_i)
@@ -98,6 +100,8 @@ input ack_i;
  
 output [DAT_WIDTH_PP-1:0] dat_o;
 output stb_o;
+  output s_cnt;
+  output t_cnt;
  
 // Local signals
 reg  [COUNTER_WIDTH_PP-1:0] s_cnt;
@@ -291,7 +295,66 @@ assign quotient_o = (HELD_OUTPUT_PP == 0)?quotient:quotient_reg;
 endmodule
   
   
- 
+  
+module  pwm_writer(clk_i,rst,pwm_length,pwm_o );
+  
+  input clk_i;
+  input rst;
+  input [9:0] pwm_length;
+  output pwm_o;
+  
+  reg [9:0] pwm_length;
+  reg [9:0] pwm_store;
+  reg pwm_o;
+  
+  always @ (posedge clk_i)
+    begin
+      if (rst)
+        begin
+        pwm_store <=  0;
+        pwm_o <=0;
+        end
+      else if (pwm_store == 0 )  
+        begin
+          pwm_store <= pwm_length;  // latch input when previous count is completed 
+          pwm_o <= 0;
+        end
+      if (pwm_store > 0) 
+        begin
+          pwm_store <= pwm_store - 1;
+          pwm_o <= 1;
+        end
+        //pwm_length <= pwm_length - 1;
+          //pwm_o <= 0;
+    end
+  
+endmodule
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   
   
